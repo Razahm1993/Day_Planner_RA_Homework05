@@ -14,7 +14,7 @@ $(document).ready(function () {
     for (let i = 1; i < 10; i++) {
       const row = $("<div>").addClass("row");
 
-      //set colors for time blocks for past, present and future
+      // set colors for time blocks for past, present and future
       let classOfHour = "";
       if (today.isBefore(rowHr, "hour")) {
         classOfHour = "future";
@@ -28,13 +28,13 @@ $(document).ready(function () {
 
       row.append($("<div>").addClass("col-2 hour").text(rowHr.format("h A")));
 
-      let timeBlock = rowHr.format("hA"); // keys for data in calEvents object to populate textarea
+      let timeBlock = rowHr.format("hA");
       row.append(
         $("<textarea>")
           .addClass(`col-8 ${classOfHour}`)
           .text(calEvents[timeBlock])
       );
-      //adding  save button column to row
+      //adding  save button column to row// add save button column to row
       row.append(
         $("<button>")
           .addClass("col-2 saveBtn")
@@ -56,6 +56,7 @@ $(document).ready(function () {
     renderCalendar(today, calEvents);
   }
 
+  /// on page load funtion to see if ther is any items on local stoarge then display the events
   function loadCal() {
     const storedCal = JSON.parse(localStorage.getItem("calEvents"));
     if (storedCal) {
@@ -63,32 +64,34 @@ $(document).ready(function () {
     }
   }
 
-  //on pageload - get current time to place on header  - create time blocks  - track hour to change blocks every hour
-
   loadCal();
   initCalendar();
   hourTracker();
 
-  /// on page load funtion to see if ther is any items on local stoarge then display the events
-  function loadcalendar() {
-    function hourTracker() {
-      const checkHourInterval = setInterval(function () {
-        if (moment().isAfter(hourRendered, "minute")) {
-          initCalendar();
-        }
-      }, 60000);
-    }
-
-    //adds items local storage
-    function storeCal() {
-      localStorage.setItem("calEvents", JSON.stringify(calEvents));
-    }
-
-    // storeing evenst item to loacalstorage
-    $(document).on("click", "button.saveBtn", function (event) {
-      let calDesc = event.currentTarget.parentElement.children[1].value;
-      calEvents[event.currentTarget.id] = calDesc;
-      storeCal();
-    });
+  function hourTracker() {
+    const checkHourInterval = setInterval(function () {
+      if (moment().isAfter(hourRendered, "minute")) {
+        initCalendar();
+      }
+    }, 60000);
   }
+
+  function storeCal() {
+    localStorage.setItem("calEvents", JSON.stringify(calEvents));
+  }
+
+  /// Adding  to celander
+  function clearCalendar() {
+    calEvents = {};
+    storeCal();
+    initCalendar();
+  }
+  $("button#clear-cal").on("click", clearCalendar);
+
+  // storeing evenst item to loacalstorage
+  $(document).on("click", "button.saveBtn", function (event) {
+    let calDesc = event.currentTarget.parentElement.children[1].value;
+    calEvents[event.currentTarget.id] = calDesc;
+    storeCal();
+  });
 });
